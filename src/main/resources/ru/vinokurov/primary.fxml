@@ -1,19 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTabPane?>
+<?import com.jfoenix.controls.JFXTextArea?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import com.jfoenix.controls.JFXTreeView?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
-  <tabs>
-    <Tab text="Untitled Tab 1">
-      <content>
-        <SplitPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-      </content>
-    </Tab>
-    <Tab text="Untitled Tab 2">
-      <content>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-      </content>
-    </Tab>
-  </tabs>
-</TabPane>
+<VBox prefHeight="700.0" prefWidth="1300.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+  <children>
+      <JFXTabPane fx:id="tabPain" prefHeight="642.0" prefWidth="1300.0" rotateGraphic="true" tabClosingPolicy="ALL_TABS">
+         <tabs>
+            <Tab closable="false" text="Main page">
+               <content>
+                <SplitPane dividerPositions="0.2505567928730512" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0">
+                  <items>
+                    <ScrollPane prefHeight="-1.0" prefWidth="-1.0" vbarPolicy="NEVER">
+                      <content>
+                        <AnchorPane id="Content" minHeight="-1.0" minWidth="-1.0" prefHeight="545.0" prefWidth="430.0">
+                          <children>
+                                    <JFXTreeView fx:id="treeView" minHeight="-Infinity" minWidth="-Infinity" prefHeight="589.0" prefWidth="351.0" />
+                          </children>
+                        </AnchorPane>
+                      </content>
+                    </ScrollPane>
+                    <AnchorPane>
+                           <children>
+                              <JFXTextArea fx:id="textArea" layoutX="8.0" layoutY="15.0" prefHeight="573.0" prefWidth="946.0" />
+                           </children>
+                    </AnchorPane>
+                  </items>
+                </SplitPane>
+               </content>
+            </Tab>
+         </tabs>
+      </JFXTabPane>
+      <ButtonBar buttonOrder="L_HE+U+FBIX_NCYOA_L" prefHeight="61.0" prefWidth="900.0" translateX="-860.0">
+         <buttons>
+            <JFXTextField fx:id="searchField" focusColor="#c2185b" promptText="Введите текст поиска" />
+            <JFXTextField fx:id="fileExtensionField" focusColor="#c2185b" prefColumnCount="3" promptText="Введите расширение" />
+            <JFXButton buttonType="RAISED" onAction="#findInDirectory" ripplerFill="#c2185b" text="Искать" />
+         </buttons>
+      </ButtonBar>
+  </children>
+</VBox>

@@ -22,14 +22,15 @@ import java.io.IOException;
 public class App extends Application {
 
     private static Scene scene;
+    public static Stage stage;
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("primary"));
+        App.stage = stage;
+        scene = new Scene(loadFXML("primary"), 1300, 700);
         stage.setScene(scene);
         stage.setTitle("LogFinder");
         stage.setResizable(false);
-
 
         stage.show();
     }
@@ -40,6 +41,7 @@ public class App extends Application {
 
     private static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
+        fxmlLoader.setController(new PrimaryController());
         return fxmlLoader.load();
     }
 
