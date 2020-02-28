@@ -1,23 +1,23 @@
 package ru.vinokurov;
 
 import com.jfoenix.controls.JFXTabPane;
-import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXTreeView;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.MultipleSelectionModel;
-import javafx.scene.control.TreeItem;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.DirectoryChooser;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ResourceBundle;
 
 public class PrimaryController implements Initializable {
@@ -27,6 +27,7 @@ public class PrimaryController implements Initializable {
     @FXML private JFXTextField fileExtensionField = new JFXTextField();
     @FXML private JFXTabPane tabPane = new JFXTabPane();
     @FXML private AnchorPane contentPain = new AnchorPane();
+    //@FXML private Pagination pagination = new Pagination();
     private Image nodeImgFolder = new Image(getClass().getResourceAsStream("folder.png"));
     private Image nodeImgFile = new Image(getClass().getResourceAsStream("icons8-file-25.png"));
 
@@ -35,17 +36,16 @@ public class PrimaryController implements Initializable {
      */
     @FXML
     public void findInDirectory() {
-
-//        searchField.setText("VinInd");
-//        fileExtensionField.setText(".txt");
+        fileExtensionField.setText(".txt");
+        searchField.setText(" ");
         String fileExtensionValue = fileExtensionField.getText();
         String searchFieldValue   = searchField.getText();
 
-        if (fileExtensionValue.trim().isEmpty()
-                || searchFieldValue.trim().isEmpty()) {
-            showAlert("Ошибка ввода", "Введите текст поиска и расшиирение файла.");
-            return;
-        }
+//        if (fileExtensionValue.trim().isEmpty()
+//                || searchFieldValue.trim().isEmpty()) {
+//            showAlert("Ошибка ввода", "Введите текст поиска и расшиирение файла.");
+//            return;
+//        }
 
         // clear tree
         if (treeView.getRoot() != null) {
@@ -54,15 +54,42 @@ public class PrimaryController implements Initializable {
         }
 
         // chose directory
-        DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        File choice = directoryChooser.showDialog(App.stage);
+//        DirectoryChooser directoryChooser = new DirectoryChooser();
+//        directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+//        File choice = directoryChooser.showDialog(App.stage);
+
+        File choice = new File("C:\\Users\\vinok\\OneDrive\\Рабочий стол\\TestFolder");
 
         if(choice == null || ! choice.isDirectory() || !choice.canRead()) {
             showAlert("Could not open directory", "The file is invalid.");
         } else {
             treeView.setRoot(getNodesForDirectory(choice, " ", fileExtensionValue));
         }
+    }
+
+    @FXML
+    private void openInNewTab() {
+        TreeItem<TreeViewData> item = treeView.getSelectionModel()
+                .getSelectedItem();
+
+
+        if (item == null) {
+            showAlert(
+                    "Файл не выбран.",
+                    "Выберите файл и повторите попытку"
+            );
+
+            return;
+        }
+
+        File file = item.getValue()
+                .getFile();
+        Tab tab = new Tab(file.getName());
+        tab.setContent(new BigFileView(contentPain, file.toPath()).getContent());
+        tab.setClosable(true);
+        tabPane.getTabs().add(tab);
+
+
     }
 
     /**
@@ -76,7 +103,6 @@ public class PrimaryController implements Initializable {
         TreeItem<TreeViewData> root = new TreeItem<>(new TreeViewData(directory), new ImageView(nodeImgFolder));
 
         for (File file: directory.listFiles()) {
-            System.out.println("Loading " + file.getName());
             if (file.isDirectory()) {
                 root.getChildren().add(getNodesForDirectory(file, text, extension));
             } else {
@@ -103,29 +129,29 @@ public class PrimaryController implements Initializable {
         alert.showAndWait();
     }
 
-    @FXML
-    private JFXTextArea textArea = new JFXTextArea();
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
+        // Double ClickListener on treeView item
         treeView.setOnMouseClicked((mouseEvent -> {
 
             if(mouseEvent.getClickCount() == 2) {
-                textArea.setText("");
-                TreeItem<TreeViewData> item = treeView.getSelectionModel().getSelectedItem();
-                File file = item.getValue().getFile();
-                try {
-                    Files.lines(file.toPath()).forEach((value) -> {
-                        textArea.appendText(value);
-                        textArea.appendText("\n");
-                    });
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
+                Path itemPath = treeView.getSelectionModel()
+                        .getSelectedItem()
+                        .getValue()
+                        .getFile()
+                        .toPath();
+                new BigFileView(contentPain, itemPath);
             }
         }));
+    }
+
+    private Node createPage(int pageIndex) {
+
+        Label lab = new Label();
+        lab.setText(Integer.toString(pageIndex));
+
+        return new BorderPane(lab);
     }
 
     /**
