@@ -20,7 +20,6 @@ import java.io.IOException;
  * JavaFX App
  */
 public class App extends Application {
-
     private static Scene scene;
     public static Stage stage;
 
@@ -30,8 +29,6 @@ public class App extends Application {
         scene = new Scene(loadFXML("primary"), 1300, 700);
         stage.setScene(scene);
         stage.setTitle("LogFinder");
-        stage.setResizable(false);
-
         stage.show();
     }
 

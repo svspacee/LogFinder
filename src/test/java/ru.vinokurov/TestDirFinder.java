@@ -8,21 +8,19 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Optional;
-import java.util.Scanner;
 import java.util.stream.Stream;
 
 public class TestDirFinder {
 
-    private static final String FILE_PATH = "C:\\Users\\vinok\\OneDrive\\Рабочий стол\\test3gb.txt";
+    private static final String FILE_PATH = "";
     private final String keyWord = "final";
+    private long start = 0;
 
     @Test
-    public void test() {
-        System.out.println(System.getProperty("java.class.path"));
-    }
-    @Test
     public void findWithBufferedReader() {
+        start = System.currentTimeMillis();
 
         boolean fileHavingText = false;
         try {
@@ -31,7 +29,7 @@ public class TestDirFinder {
             BufferedReader reader = new BufferedReader(fileIn);
             String line;
             while((line = reader.readLine()) != null) {
-                if((line.contains(keyWord))) {
+                if((line.lastIndexOf(keyWord) > -1)) {
                     fileHavingText = true;
                     break;
                 }
@@ -39,62 +37,31 @@ public class TestDirFinder {
         }catch (IOException e){
             System.out.println(e);
         }
-
-        assert fileHavingText;
+        System.out.println("BufIO Time: " + (System.currentTimeMillis() - start) + " seconds");
+        Assert.assertTrue(fileHavingText);
     }
+
 
     /**
      * Test of a search text with basic Files stream.
      */
     @Test
     public void findTextWithStream() {
+        start = System.currentTimeMillis();
+
         Path path = Paths.get(FILE_PATH);
 
         Optional<String> optional = null;
         try (Stream<String> stream = Files.lines(path)){
-            optional = stream.filter((line) -> line.contains(keyWord)).findAny();
+            optional = stream.filter((line) -> line.contains("final")).findAny();
             optional.ifPresent(System.out::println);
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("No file");
         }
+
+        System.out.println("Files line Time: " + (System.currentTimeMillis() - start) + " seconds");
+
         Assert.assertTrue( optional.isPresent());
-    }
-
-
-    @Test
-    public void streamFile() {
-
-        Path path = Paths.get(FILE_PATH);
-
-        try (Stream<String> stream = Files.newBufferedReader(path).lines()){
-            stream.forEach(value -> {});
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("No file");
-        }
-    }
-
-    @Test
-    public void findTextWithScanner() {
-
-        try (Scanner sc = new Scanner(new FileInputStream(FILE_PATH), "UTF-8") ){
-
-            while (sc.hasNextLine()) {
-                String line = sc.nextLine();
-                if (line.contains(keyWord)) {
-                    return;
-                }
-            }
-
-            if (sc.ioException() != null) {
-                throw sc.ioException();
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }
